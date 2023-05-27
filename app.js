@@ -1,51 +1,32 @@
-const express = require('express');
+const express=require('express')
+const cors=require('cors')
+const connectDB = require('./DB/config')
+const morgan = require('morgan')
+
+require('dotenv').config()
+
+//db connect
+connectDB()
+//env
+port=process.env.PORT
+
+//rest object
 const app = express();
-const morgan = require('morgan');
-const mongoose = require('mongoose');
-const cors = require('cors');
-require('dotenv/config');
-const authJwt = require('./helpers/jwt');
-const errorHandler = require('./helpers/error-handler');
 
-
+//middelwares
 app.use(cors());
-app.options('*', cors())
-
-//middleware
 app.use(express.json());
-app.use(morgan('tiny'));
-app.use(authJwt());
-app.use('/public/uploads', express.static(__dirname + '/public/uploads'));
-app.use(errorHandler);
+app.use(morgan("dev"));
 
-//Routes
-const categoriesRoutes = require('./routes/categories');
-const productsRoutes = require('./routes/products');
-const usersRoutes = require('./routes/users');
-const ordersRoutes = require('./routes/orders');
+//router
+app.use(`/api/v1/auth`,require('./router/authRoute'))
+app.use(`/api/v1/category`,require('./router/categoryRoute'))
+app.use(`/api/v1/product`,require('./router/productRoute'))
+app.use(`/api/v1/user`,require('./router/user'))
 
-const api = process.env.API_URL;
 
-app.use(`api/v1/categories`, categoriesRoutes);
-app.use(`api/v1/products`, productsRoutes);
-app.use(`api/v1/users`, usersRoutes);
-app.use(`api/v1/orders`, ordersRoutes);
 
-//Database
-mongoose.connect(process.env.CONNECTION_STRING, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    dbName: 'eshop-database'
-})
-.then(()=>{
-    console.log('Database Connection is ready...')
-})
-.catch((err)=> {
-    console.log(err);
-})
 
-//Server
-app.listen(3000, ()=>{
-
-    console.log('server is running http://localhost:3000');
+app.listen(port,()=>{
+    console.log(`app is running on ${port} `)
 })
