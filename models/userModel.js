@@ -36,7 +36,10 @@ role:{
 address:{
     type:String,
     default:""
-}
+},
+cart: [{
+    product: { type: mongoose.Schema.Types.ObjectId, ref: 'product' },
+    }]
 },{
     timestamps:true
 })

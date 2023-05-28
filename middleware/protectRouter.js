@@ -6,7 +6,7 @@ function verifyToken(req,res,next){
     req.user=decoded
     next()  
     } catch (error) {
-res.status(401).json({message:"Invalid token"})   
+res.status(401).send({message:"Invalid token"})   
     }
 }
 function verifyTokenAndAuthorzation(req,res,next){
@@ -14,7 +14,7 @@ function verifyTokenAndAuthorzation(req,res,next){
     if(req.user  || req.user.role){
         next()
     }else{
-        return res.status(403).json({message:"you are not allowed"})
+        return res.status(403).send({message:"you are not allowed"})
     }
    }) 
 }
@@ -23,7 +23,7 @@ function verifyTokenAndAdmin(req,res,next){
         if(req.user.role === 'admin'){
             next()
         }else{
-            return res.status(403).json({message:"you are not allowed"})
+            return res.status(403).send({message:"you are not allowed"})
         }})
 }
 module.exports={verifyTokenAndAuthorzation,verifyTokenAndAdmin}

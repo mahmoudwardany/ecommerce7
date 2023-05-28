@@ -26,7 +26,7 @@ router.get("/product-list/:page", productPerPage);
 
 router.post('/filter-product/',filterProducts)
 
-router.post('/add-to-cart',addToCart)
+// router.post('/:id/cart',addToCart)
 
 router.delete('/:pid',deleteProduct)
 

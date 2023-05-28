@@ -6,6 +6,7 @@ const router=require('express').Router()
 
 router.get('/orders',verifyTokenAndAuthorzation,getOrders.getOrders)
 router.get('/all-orders',verifyTokenAndAdmin,getOrders.getAllOrders)
+router.put('/update-status/:order',verifyTokenAndAdmin,getOrders.updateStatus)
 
 
 module.exports=router

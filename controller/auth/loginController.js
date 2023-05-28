@@ -23,7 +23,8 @@ try {
         name:user.name,
         email:user.email,
         phone:user.phone,
-        role:user.role
+        role:user.role,
+        address:user.address
     }
    })
 } catch (error) {

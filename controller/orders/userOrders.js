@@ -34,4 +34,18 @@ const getAllOrders=async(req,res)=>{
         })
     }
 }
-module.exports={getOrders,getAllOrders}
+const updateStatus=async(req,res)=>{
+    try {
+        const{orderId}=req.params;
+        const {status}=req.body;
+        const updateOrderStatus=await ordersModel.findByIdAndUpdate(orderId,{status},{new:true})
+        res.send({
+            updateOrderStatus,
+            message:"order status updated successfully",
+            status:"success"
+        })
+    } catch (error) {
+        res.status(500).send(error)
+    }
+}
+module.exports={getOrders,getAllOrders,updateStatus}

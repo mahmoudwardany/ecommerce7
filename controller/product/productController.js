@@ -301,29 +301,7 @@ const getProductsByCategory=async(req,res)=>{
     }
 }
 
-const addToCart=async(req,res)=>{
-    const { userId, productId } = req.body;
-    try {
-      const user = await userModel.findById(userId);
-      if (!user) {
-        return res.status(404).json({ message: 'User not found' });
-      }
-      const product = await productModel.findById(productId);
-      if (!product) {
-        return res.status(404).json({ message: 'Product not found' });
-      }
-      user.cart.push(product._id);
-      await user.save();
-      res.status(200).json({ message: 'Product added to cart' });
 
-   } catch (error) {
-    res.status(500).send({
-        success:false,
-        message:"Error in adding product to cart",
-        error
-    })
-   }
-}
 //payment token
 const braintreeToken=async(req,res)=>{
     try {
@@ -374,4 +352,4 @@ const braintreePayment = async (req, res) => {
 
 
 
-  module.exports = { braintreePayment,braintreeToken,addToCart,relatedProduct,createProduct, getAllProduct, getAllProduct,deleteProduct,filterProducts ,getOneProduct,getPhoto,updateProduct,productPerPage,productCountController,searchProduct,getProductsByCategory}
+  module.exports = { braintreePayment,braintreeToken,relatedProduct,createProduct, getAllProduct, getAllProduct,deleteProduct,filterProducts ,getOneProduct,getPhoto,updateProduct,productPerPage,productCountController,searchProduct,getProductsByCategory}
