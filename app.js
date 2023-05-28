@@ -8,7 +8,7 @@ require('dotenv').config()
 //db connect
 connectDB()
 //env
-port=process.env.PORT
+port=process.env.PORT || 5000
 
 //rest object
 const app = express();
