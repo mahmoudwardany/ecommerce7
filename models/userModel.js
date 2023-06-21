@@ -1,79 +1,50 @@
-const {model,Schema, default: mongoose}=require('mongoose')
-const Joi=require('joi')
+import {Schema,model} from'mongoose'
+
 const userSchema=new Schema({
-name:{
+userName:{
     type:String,
-    required:true,
-    minLength:3,
-    maxLength:15,
-    trim:true
+    required:[true,'userName is required'],
+    minLength:[3,'too short userName'],
+    maxLength:[20,'too long userName'],
 },
 email:{
     type:String,
-    required:true,
-   unique:true,
-    trim:true
+    required:[true,'email is required'],
+    unique:[true,'email must be unique']
 },
 password:{
     type:String,
-    required:true,
-    minLength:6,
-    maxLength:100,
-    trim:true
+    required:[true,'password is required'],
 },
 phone:{
     type:String,
-    required:true
 },
-answer:{
-    type:String,
-    required:true
+active:{
+    type:Boolean,
+    default:false
 },
 role:{
     type:String,
-    default:"user"
+    default:"User",
+    emum:["User","Admin"]
 },
-address:{
+image:{
+    type:String
+},
+confirmEmail:{
     type:String,
-    default:""
+    default:false,
 },
-cart: [{
-    product: { type: mongoose.Schema.Types.ObjectId, ref: 'product' },
-    }]
+blocked:{
+    type:Boolean,
+    default:false
+},
+DDB:String
 },{
     timestamps:true
 })
-function validRegister(obj){
-    const schema=Joi.object({
-        name:Joi.string().required().min(3).max(20),
-        email:Joi.string().email(),
-        password:Joi.string()
-        .pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')),
-        rePassword:Joi.ref('password'),
-        phone:Joi.string(),
-        answer:Joi.string().required().min(3).max(20),
-        address:Joi.string().required().min(3).max(50),
 
-    })
-    return schema.validate(obj)
-    
-    }
-    function loginValidation(obj){
-        const schema=Joi.object({
-            email:Joi.string().email(),
-            password:Joi.string()
-            .pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')),
-        })
-        return schema.validate(obj)
-        }
-        function validforgotPassword(obj){
-            const schema=Joi.object({
-                email:Joi.string().required(),
-                answer:Joi.string().required(),
-                newPassword:Joi.string().required()
-            })
-            return schema.validate(obj)
-        }
-const userModel=model('user',userSchema)
 
-module.exports={userModel,validRegister,loginValidation,validforgotPassword}
+
+const userModel=model('User',userSchema)
+export default userModel
