@@ -1,42 +1,60 @@
 import cartModel from "../../models/cartModel.js";
+import productModel from "../../models/productModel.js";
 import ApiError from "../../utils/apiError.js";
 import { asyncHandler } from "../../utils/catchAsyncHandler.js";
 
+function calcPrice(cart){
+    let sumTotal=0
+    cart.cartItems.forEach(el => {
+        sumTotal+=el.price*el.quantity
+    });
+    cart.totalPrice=sumTotal
+}
 
-export const addTocart = asyncHandler(async (req, res) => {
-    const { products } = req.body;
-    const { _id } = req.user;
-
-    const cart = await cartModel.findOne( { userId: _id })
+export const addTocart = asyncHandler(async (req, res, next) => {
+    const {price} = await productModel.findById(req.body.product)
+    req.body.price = price
+    let cart = await cartModel.findOne({ user: req.user._id })
     if (!cart) {
-        const newCart = await cartModel.create({
-            userId: _id,
-            products
+        let newCart = new cartModel({
+            cartItems: [req.body],
+            user: req.user._id
         })
-        return res.status(201).json({
-            status: "success",
-            newCart
-        })
-    }
-    //update cart if user have cart
-    //loop on new products that user added
-    for (const product of products) {
-        let matched = false;
-        //loop on products on database
-        for (let i = 0; i < cart.products.length; i++) {
-            //compare product in req.body == product in cart in database
-            if (product.productId == cart.products[i].productId.toString()) {
-                cart.products[i] = product
-                matched = true
-                break;
-            }
+        calcPrice(newCart)
+        await newCart.save()
+        res.status(200).json({ message: "cart created successfully.", newCart })
+    } else {
+        let findedProduct = cart.cartItems.find((elm) => elm.product == req.body.product)
+        if (findedProduct) {
+            findedProduct.quantity += 1
+        } else {
+            cart.cartItems.push(req.body)
         }
-    if (!matched) {
-        cart.products.push(product)
+        calcPrice(cart)
+        await cart.save()
+        res.status(200).json({ cart })
     }
+})
+
+export const removeFromCart = asyncHandler(async (req, res, next) => {
+    const cart = await cartModel.findOneAndUpdate({ user: req.user._id }, {
+        $pull: { cartItems: { _id: req.params.itemId } }
+    }, { new: true })
+    calcPrice(cart)
+    !cart && next(new ApiError(`Item Not Found`, 404))
+    cart && res.status(200).json({ cart })
+})
+
+export const updateQuantity = asyncHandler(async (req, res, next) => {
+    const cart = await cartModel.findOne({ user: req.user._id })
+    let findProduct = cart.cartItems.find(el => el.product == req.params.id)
+    if (findProduct) {
+        findProduct.quantity = req.body.quantity
     }
-    await cartModel.findOneAndUpdate({ userId: _id },
-            { products: cart.products }, { new: true }
-    )
-    return res.status(200).json({ message: "Done", cart })
+    calcPrice(cart)
+    await cart.save()
+    res.status(200).json({
+        success: true,
+        data: cart
+    })
 })

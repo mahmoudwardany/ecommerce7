@@ -5,7 +5,7 @@ import { orederAccess } from './orderAccess.js'
 import { createOrder } from './orderCtrl.js'
 
 
-router.post('/',verifyToken(orederAccess.createOrder),createOrder)
+router.post('/:id',verifyToken(orederAccess.createOrder),createOrder)
 
 
 
