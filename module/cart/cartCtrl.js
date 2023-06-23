@@ -3,18 +3,18 @@ import productModel from "../../models/productModel.js";
 import ApiError from "../../utils/apiError.js";
 import { asyncHandler } from "../../utils/catchAsyncHandler.js";
 import couponModel from '../../models/coupon.Model.js'
-function calcPrice(cart){
-    let sumTotal=0
+function calcPrice(cart) {
+    let sumTotal = 0
     cart.cartItems.forEach(el => {
-        sumTotal+=el.price*el.quantity
+        sumTotal += el.price * el.quantity
+        cart.totalPrice = sumTotal
     });
-    cart.totalPrice=sumTotal
-    if(cart.totalPriceAfterDiscount){
-        cart.totalPriceAfterDiscount= cart.totalPrice-((cart.totalPrice *cart.discount )/100).toFixed(2)
+    if (cart.totalPriceAfterDiscount) {
+        cart.totalPriceAfterDiscount = cart.totalPrice - ((cart.totalPrice * cart.discount) / 100).toFixed(2)
     }
 }
 export const addTocart = asyncHandler(async (req, res, next) => {
-    const {price} = await productModel.findById(req.body.product)
+    const { price } = await productModel.findById(req.body.product)
     req.body.price = price
     let cart = await cartModel.findOne({ user: req.user._id })
     if (!cart) {
@@ -64,7 +64,7 @@ export const updateQuantity = asyncHandler(async (req, res, next) => {
 
 
 export const applyCoupon = asyncHandler(async (req, res, next) => {
-    let  coupon = await couponModel.findOne({ code: req.body.code, expires: { $gt: Date.now() } })
+    let coupon = await couponModel.findOne({ code: req.body.code, expires: { $gt: Date.now() } })
     if (!code) return next(new ApiError('coupon not found or expired'))
     let cart = await cartModel.findOne({ user: req.user._id })
     cart.totalPriceAfterDiscount = (cart.totalPrice - (cart.totalPrice * coupon.discount) / 100).toFixed(2)
@@ -73,15 +73,15 @@ export const applyCoupon = asyncHandler(async (req, res, next) => {
     res.status(200).json({ cart })
 })
 
-export const getUserCart=asyncHandler(async (req, res, next) => {
-const cart=await cartModel.findOne({user:req.user._id})
-res.status(200).json({
-    count:cart?.cartItems?.length,
-    cart:cart?.cartItems,
-    totalPrice:cart?.totalPrice,
-    discount:cart?.discount,
-    totalPriceAfterDiscount:cart?.totalPriceAfterDiscount
-})
+export const getUserCart = asyncHandler(async (req, res, next) => {
+    const cart = await cartModel.findOne({ user: req.user._id })
+    res.status(200).json({
+        count: cart?.cartItems?.length,
+        cart: cart?.cartItems,
+        totalPrice: cart?.totalPrice,
+        discount: cart?.discount,
+        totalPriceAfterDiscount: cart?.totalPriceAfterDiscount
+    })
 
 
 })

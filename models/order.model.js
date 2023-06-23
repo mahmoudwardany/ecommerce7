@@ -15,7 +15,7 @@ const orderSchema = new Schema({
             type: Number,
             default: 1,
         },
-        priceUnit: {
+        totalPrice: {
             type: Number
         },
         totalPrice: {

@@ -23,5 +23,26 @@ const order=await orderModel.create({
     totalOrderPrice
 })
 //4-decrement quantity on stock and increment product sold
+if(order){
+    const bulkOption=cart.cartItems.map(item=>({
+    updateOne:{
+        filter:{_id:item.product},
+        update:{
+            $inc:{
+                amount:-item.quantity,
+                stock:-item.quantity,
+                soldItems:+item.quantity
+            }
+        }
+    }
+}))
+
+await productModel.bulkWrite(bulkOption,{})
+await cartModel.findByIdAndDelete(id)
+}
+res.status(201).json({
+    status:"success",
+    data:order
+})
 //5-clear cart for user
 })
