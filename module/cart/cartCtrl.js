@@ -41,6 +41,7 @@ export const removeFromCart = asyncHandler(async (req, res, next) => {
         $pull: { cartItems: { _id: req.params.itemId } }
     }, { new: true })
     calcPrice(cart)
+    await cart.save()
     !cart && next(new ApiError(`Item Not Found`, 404))
     cart && res.status(200).json({ cart })
 })
