@@ -13,7 +13,6 @@ function calcPrice(cart){
         cart.totalPriceAfterDiscount= cart.totalPrice-((cart.totalPrice *cart.discount )/100).toFixed(2)
     }
 }
-
 export const addTocart = asyncHandler(async (req, res, next) => {
     const {price} = await productModel.findById(req.body.product)
     req.body.price = price
@@ -65,12 +64,24 @@ export const updateQuantity = asyncHandler(async (req, res, next) => {
 
 
 export const applyCoupon = asyncHandler(async (req, res, next) => {
-    let { code, discount } = await couponModel.findOne({ code: req.body.code, expires: { $gt: Date.now() } })
-    console.log(code)
+    let  coupon = await couponModel.findOne({ code: req.body.code, expires: { $gt: Date.now() } })
     if (!code) return next(new ApiError('coupon not found or expired'))
     let cart = await cartModel.findOne({ user: req.user._id })
-    cart.totalPriceAfterDiscount = (cart.totalPrice - (cart.totalPrice * discount) / 100).toFixed(2)
-    cart.discount = discount
+    cart.totalPriceAfterDiscount = (cart.totalPrice - (cart.totalPrice * coupon.discount) / 100).toFixed(2)
+    cart.discount = coupon.discount
     await cart.save()
     res.status(200).json({ cart })
+})
+
+export const getUserCart=asyncHandler(async (req, res, next) => {
+const cart=await cartModel.findOne({user:req.user._id})
+res.status(200).json({
+    count:cart?.cartItems?.length,
+    cart:cart?.cartItems,
+    totalPrice:cart?.totalPrice,
+    discount:cart?.discount,
+    totalPriceAfterDiscount:cart?.totalPriceAfterDiscount
+})
+
+
 })
