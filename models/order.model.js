@@ -1,13 +1,12 @@
 import { Schema, model } from 'mongoose'
 
 const orderSchema = new Schema({
-    userId: {
+    user: {
         type: Schema.Types.ObjectId,
-        required: [true, 'UserId is required'],
         ref: "User",
     },
-    products:[ {
-        productId: {
+    cartItems: [{
+        product: {
             type: Schema.Types.ObjectId,
             required: [true, 'ProductId is required'],
             ref: "Product"
@@ -16,33 +15,37 @@ const orderSchema = new Schema({
             type: Number,
             default: 1,
         },
-        priceUnit:{
-            type:Number
-        }, 
-        totalPrice:{
-            type:Number,
-            default:0
+        priceUnit: {
+            type: Number
+        },
+        totalPrice: {
+            type: Number,
+            default: 0
         },
     }],
-    totalPrice:{
-type:Number,
-default:0
+    totalOrderPrice: {
+        type: Number,
+        default: 0
     },
-    address:String,
-    phone:String,
-    couponId:{
-        type:Schema.Types.ObjectId,
-        ref:"Coupon"
+    shippingAddress:{
+        details:String,
+        phone:Number,
+        city:String
+    } ,
+    paidAt: Date,
+    status: {
+        type: String,
+        enum: ['pending', "placed", "onWay", "recived", "rejected"],
+        default: "pending"
     },
-    status:{
-        type:String,
-        enum:['pending',"placed","onWay","recived","rejected"],
-        default:"pending"
+    paymentMethod: {
+        type: String,
+        default: "Cash",
+        enum: ["Cash", "Visa"]
     },
-    paymentMethod:{
-        type:String,
-        default:"Cash",
-        enum:["Cash","Visa"]
+    isPaid: {
+        type: Boolean,
+        default: false
     }
 }, {
     timestamps: true,
@@ -50,5 +53,5 @@ default:0
 
 
 
-const orederModel = model('Order', orderSchema)
-export default orederModel
+const orderModel = model('Order', orderSchema)
+export default orderModel
