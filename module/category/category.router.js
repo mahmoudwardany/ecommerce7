@@ -8,7 +8,7 @@ import  subCategoryRouter  from '../subCategory/subCat.router.js'
 
 router.use('/:categoryId/subcategory',subCategoryRouter)
 router.post('/',verifyToken(categoryAccess.add),myMulter(multerValidation.image).single('image'),createCategory)
-router.put('/:id',verifyToken(categoryAccess.add),myMulter(multerValidation.image).single('image'),updateCategory)
+router.put('/:id',verifyToken(categoryAccess.update),myMulter(multerValidation.image).single('image'),updateCategory)
 router.get('/',getAllCategories)
 router.get('/:id',getCategory)
 

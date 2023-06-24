@@ -13,6 +13,12 @@ function calcPrice(cart) {
         cart.totalPriceAfterDiscount = cart.totalPrice - ((cart.totalPrice * cart.discount) / 100).toFixed(2)
     }
 }
+/**--------------------------------
+ * @desc Add Product to Cart
+ * @router /api/v1/cart
+ * @access private (Login User)
+ * @method POST
+ */
 export const addTocart = asyncHandler(async (req, res, next) => {
     const { price } = await productModel.findById(req.body.product)
     req.body.price = price
@@ -37,7 +43,12 @@ export const addTocart = asyncHandler(async (req, res, next) => {
         res.status(200).json({ cart })
     }
 })
-
+/**--------------------------------
+ * @desc Delete Product from Cart
+ * @router /api/v1/cart/:itemId
+ * @access private (Login User)
+ * @method Delete
+ */
 export const removeFromCart = asyncHandler(async (req, res, next) => {
     const cart = await cartModel.findOneAndUpdate({ user: req.user._id }, {
         $pull: { cartItems: { _id: req.params.itemId } }
@@ -47,7 +58,12 @@ export const removeFromCart = asyncHandler(async (req, res, next) => {
     !cart && next(new ApiError(`Item Not Found`, 404))
     cart && res.status(200).json({ cart })
 })
-
+/**--------------------------------
+ * @desc Update Product In Cart
+ * @router /api/v1/cart/:itemId
+ * @access private (Login User)
+ * @method Put
+ */
 export const updateQuantity = asyncHandler(async (req, res, next) => {
     const cart = await cartModel.findOne({ user: req.user._id })
     let findProduct = cart.cartItems.find(el => el?.product == req.params.id)
@@ -61,7 +77,12 @@ export const updateQuantity = asyncHandler(async (req, res, next) => {
         data: cart
     })
 })
-
+/**--------------------------------
+ * @desc Apply coupon to get Discount
+ * @router /api/v1/cart/applyCoupon
+ * @access private (Login User)
+ * @method Post
+ */
 
 export const applyCoupon = asyncHandler(async (req, res, next) => {
     let coupon = await couponModel.findOne({ code: req.body.code, expires: { $gt: Date.now() } })
@@ -72,7 +93,12 @@ export const applyCoupon = asyncHandler(async (req, res, next) => {
     await cart.save()
     res.status(200).json({ cart })
 })
-
+/**--------------------------------
+ * @desc Get User Cart
+ * @router /api/v1/cart/
+ * @access private (Login User)
+ * @method Get
+ */
 export const getUserCart = asyncHandler(async (req, res, next) => {
     const cart = await cartModel.findOne({ user: req.user._id })
     res.status(200).json({

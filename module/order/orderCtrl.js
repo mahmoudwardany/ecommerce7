@@ -4,7 +4,12 @@ import productModel from "../../models/productModel.js";
 import ApiError from "../../utils/apiError.js";
 import { asyncHandler } from "../../utils/catchAsyncHandler.js";
 
-
+/**--------------------------------
+ * @desc Create Cash Order
+ * @router /api/v1/order/:id
+ * @access private (Login User)
+ * @method Post
+ */
 export const createCashOrder = asyncHandler(async (req, res,next) => {
 //Get Cart depend on CartId
 const {id}=req.params

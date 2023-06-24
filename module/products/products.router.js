@@ -2,7 +2,7 @@ import { Router } from 'express'
 const router = Router()
 import { verifyToken } from '../../middlewares/authorization.js'
 import { multerValidation, myMulter } from '../../cloudinary/multerCloud.js'
-import { createProduct, getProducts, updateProduct } from './productsCtrl.js'
+import { createProduct, getProduct, getProducts, updateProduct } from './productsCtrl.js'
 import productAccess from './productAccess.js'
 import wishList from '../wishlist/wishlist.router.js'
 
@@ -12,6 +12,7 @@ router.put('/:id', verifyToken(productAccess.update), myMulter(multerValidation.
 
 
 router.get('/', getProducts)
+router.get('/:id', getProduct)
 
 
 

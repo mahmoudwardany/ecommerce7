@@ -6,7 +6,7 @@ import {multerValidation, myMulter} from '../../cloudinary/multerCloud.js'
 import { createBrand, getAllBrand, getBrand, updateBrand } from './brandCtrl.js'
 
 router.post('/',verifyToken(brandAccess.add),myMulter(multerValidation.image).single('image'),createBrand)
-router.put('/:id',verifyToken(brandAccess.add),myMulter(multerValidation.image).single('image'),updateBrand)
+router.put('/:id',verifyToken(brandAccess.update),myMulter(multerValidation.image).single('image'),updateBrand)
 router.get('/',getAllBrand)
 router.get('/:id',getBrand)
 export default router

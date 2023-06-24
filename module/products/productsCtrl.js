@@ -6,7 +6,12 @@ import cloudinary from "../../cloudinary/cloudinary.js";
 import slugify from "slugify";
 import ApiError from "../../utils/apiError.js";
 
-
+/**--------------------------------
+ * @desc Create Product
+ * @router /api/v1/product/
+ * @access private (Admin Only)
+ * @method Post
+ */
 export const createProduct = asyncHandler(
     async (req, res, next) => {
         if (!req.files?.length) {
@@ -43,7 +48,12 @@ export const createProduct = asyncHandler(
         }
     }
 )
-
+/**--------------------------------
+ * @desc Update Product
+ * @router /api/v1/product/:id
+ * @access private (Admin Only)
+ * @method Put
+ */
 export const updateProduct = asyncHandler(
     async (req, res, next) => {
         const { id } = req.params;
@@ -68,11 +78,10 @@ export const updateProduct = asyncHandler(
         }
         //find category and subCategory
         const category = await subCategoryModel.findOne({ _id: subCategoryId, categoryId })
-        if (!category) { return next(new ApiError(`Invalid Category Id: Not Found`, 404)) }
+        if (!category)  return next(new ApiError(`Invalid Category Id: Not Found`, 404)) 
         //find Brand
         const brand = await brandModel.findOne({ _id: brandId })
         if (!brand) { return next(new ApiError(`Invalid Brand Id: Not Found`, 404)) }
-
         //update Images
         const images = []
         const imagePublicId = []
@@ -98,12 +107,17 @@ export const updateProduct = asyncHandler(
             updateProduct
         })
     })
+/**--------------------------------
+* @desc Get All Products
+* @router /api/v1/product/
+* @access public 
+* @method Get
+*/
 export const getProducts = asyncHandler(
     async (req, res) => {
         let products;
         let numPerPage = 3;
         const { pageNumber } = req.query
-
         if (pageNumber) {
             products = await productModel.find()
                 .skip((pageNumber - 1) * numPerPage)
@@ -113,4 +127,18 @@ export const getProducts = asyncHandler(
             products = await productModel.find().sort({ createdAt: -1 })
         }
         res.status(200).json(products)
+    })
+
+/**--------------------------------
+* @desc Get All Products
+* @router /api/v1/product/:id
+* @access public 
+* @method Get
+*/
+export const getProduct = asyncHandler(
+    async (req, res,next) => {
+        const { id } = req.params
+        const product = await productModel.findById(id)
+        if(!product)   return next(new ApiError(`Product Not Found in ${id}`, 404))
+        res.status(200).json(product)
     })
