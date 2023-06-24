@@ -15,12 +15,8 @@ const orderSchema = new Schema({
             type: Number,
             default: 1,
         },
-        totalPrice: {
+        price: {
             type: Number
-        },
-        totalPrice: {
-            type: Number,
-            default: 0
         },
     }],
     totalOrderPrice: {
@@ -51,7 +47,10 @@ const orderSchema = new Schema({
     timestamps: true,
 })
 
-
+orderSchema.pre(/^find/,function(next){
+    this.populate({path:"cartItems.product",select:"title price"})
+    next()
+})
 
 const orderModel = model('Order', orderSchema)
 export default orderModel
