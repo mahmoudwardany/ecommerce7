@@ -39,7 +39,6 @@ const userSchema = new Schema({
         type: Boolean,
         default: false
     },
-    DDB: String,
     wishList: [{
         type: Schema.Types.ObjectId,
         ref: "Product"
