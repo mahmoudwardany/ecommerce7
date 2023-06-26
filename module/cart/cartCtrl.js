@@ -4,11 +4,10 @@ import ApiError from "../../utils/apiError.js";
 import { asyncHandler } from "../../utils/catchAsyncHandler.js";
 import couponModel from '../../models/coupon.Model.js'
 function calcPrice(cart) {
-    let sumTotal = 0
-    cart.cartItems.forEach(el => {
-        sumTotal += el.price * el.quantity
-        cart.totalPrice = sumTotal
-    });
+    cart.cartItems.reduce((acc, product) => {
+        acc += product.price * product.quantity
+        cart.totalPrice = acc
+    }, 0);
     if (cart.totalPriceAfterDiscount) {
         cart.totalPriceAfterDiscount = cart.totalPrice - ((cart.totalPrice * cart.discount) / 100).toFixed(2)
     }
