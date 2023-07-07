@@ -112,8 +112,8 @@ export const getspecificOrder = asyncHandler(async (req, res, next) => {
  */
 export const getCheckout = asyncHandler(async (req, res, next) => {
     //Get Cart depend on CartId
-    const { id } = req.params
-    const cart = await cartModel.findById(id)
+    const { cartId } = req.params
+    const cart = await cartModel.findById(cartId)
     if (!cart) {
         next(new ApiError(`Cart Not found`, 404))
     }
