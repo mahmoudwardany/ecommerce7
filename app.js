@@ -8,7 +8,7 @@ import ApiError from './utils/apiError.js'
 import { globalHandlerError } from './middlewares/error.middleware.js'
 import morgan from 'morgan'
 import hpp from 'hpp'
-import {cors} from 'cors'
+import cors from 'cors'
 import { rateLimit } from 'express-rate-limit'
 import xxs from 'xss-clean'
 //DB
