@@ -11,11 +11,14 @@ import hpp from 'hpp'
 import cors from 'cors'
 import { rateLimit } from 'express-rate-limit'
 import xxs from 'xss-clean'
+import compression from 'compression'
 //DB
 connectDB()
 //MiddleWare
-app.use(express.json())
+app.use(express.json({limit:"30kb"}))
 app.use(morgan('dev'))
+app.use(compression());
+
 //Security
 app.use(cors())
 const limiter = rateLimit({
