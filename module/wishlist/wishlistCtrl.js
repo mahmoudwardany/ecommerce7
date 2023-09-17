@@ -1,5 +1,4 @@
 import userModel from "../../models/userModel.js";
-import ApiError from "../../utils/apiError.js";
 import { asyncHandler } from "../../utils/catchAsyncHandler.js";
 
 /**--------------------------------

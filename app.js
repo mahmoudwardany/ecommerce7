@@ -3,7 +3,7 @@ const app=express()
 import dotenv from 'dotenv'
 dotenv.config()
 import * as indexRouter from './routes/index.js'
-import connectDB from './config/DB.js'
+import connectDB from './DB/DB.js'
 import ApiError from './utils/apiError.js'
 import { globalHandlerError } from './middlewares/error.middleware.js'
 import morgan from 'morgan'
@@ -22,8 +22,8 @@ app.use(compression());
 //Security
 app.use(cors())
 const limiter = rateLimit({
-	windowMs: 15 * 60 * 1000, // 15 minutes
-	max: 200, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+	windowMs: 15 * 60 * 1000, 
+	max: 200,
 })
 // Apply the rate limiting middleware to all requests
 app.use(limiter)

@@ -1,104 +1,106 @@
-import categoryModel from "../../models/categoryModel.js";
 import ApiError from "../../utils/apiError.js";
 import { asyncHandler } from "../../utils/catchAsyncHandler.js";
 import cloudinary from "../../cloudinary/cloudinary.js";
 import slugify from "slugify";
-import subCategoryModel from "../../models/subCategoryModel.js";
 import brandModel from "../../models/brandModel.js";
 
-/**--------------------------------
+/**
  * @desc Create Brand
- * @router /api/v1/brand/
+ * @route POST /api/v1/brand/
  * @access private (Admin Only)
- * @method Post
  */
 export const createBrand = asyncHandler(async (req, res, next) => {
     if (!req.file) {
-        next(new ApiError(`Image is required`, 400))
-    } else {
-        const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
-            folder: `ecommerce/brand`
-        })
-        const brand = await brandModel.create({
-            name: req.body.name,
-            image: secure_url,
-            slug: slugify(req.body.name),
-            imagePublicId: public_id,
-            createdBy: req.user._id,
-        })
-        res.status(201).json({
-            message: "subCategory Created Successfully",
-            brand
-        })
+        return next(new ApiError(`Image is required`, 400));
     }
-})
-/**--------------------------------
+
+    const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
+        folder: `ecommerce/brand`
+    });
+
+    const brand = await brandModel.create({
+        name: req.body.name,
+        image: secure_url,
+        slug: slugify(req.body.name),
+        imagePublicId: public_id,
+        createdBy: req.user._id,
+    });
+
+    res.status(201).json({
+        message: "Brand Created Successfully",
+        brand
+    });
+});
+
+/**
  * @desc Update Brand
- * @router /api/v1/brand/:id
+ * @route PUT /api/v1/brand/:id
  * @access private (Admin Only)
- * @method Put
  */
-export const updateBrand = asyncHandler(async (req, res, e) => {
-    const { id } = req.params
-    const findBrand = await brandModel.findById(id)
+export const updateBrand = asyncHandler(async (req, res, next) => {
+    const { id } = req.params;
+    const findBrand = await brandModel.findById(id);
+
     if (req.file) {
-        await cloudinary.uploader.destroy(findBrand?.imagePublicId)
-        let { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path,
-            {
-                folder: "ecommerce/brand"
-            }
-        )
+        await cloudinary.uploader.destroy(findBrand?.imagePublicId);
+        const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
+            folder: "ecommerce/brand"
+        });
         req.body.image = secure_url;
-        req.body.imagePublicId = public_id
+        req.body.imagePublicId = public_id;
     }
+
     if (req.body.name) {
-        req.body.slug = slugify(req.body.name)
+        req.body.slug = slugify(req.body.name);
     }
-    const brand = await brandModel.findByIdAndUpdate({ _id: id }, (req.body), { new: true })
+
+    const brand = await brandModel.findByIdAndUpdate({ _id: id }, req.body, { new: true });
+
     if (brand) {
         res.status(200).json({
             message: "Brand Updated Successfully",
             brand
-        })
+        });
     } else {
-        await cloudinary.uploader.destroy(req.body.imagePublicId)
-        next(new ApiError(`Failde to update brand`, 400))
+        await cloudinary.uploader.destroy(req.body.imagePublicId);
+        next(new ApiError(`Failed to update brand`, 400));
     }
-})
+});
 
-/**--------------------------------
+/**
  * @desc Get All Brands
- * @router /api/v1/brand/
+ * @route GET /api/v1/brand/
  * @access public
- * @method Get
  */
 export const getAllBrand = asyncHandler(async (req, res) => {
-    const brand = await brandModel.find({}).populate([
+    const brands = await brandModel.find({}).populate([
         {
             path: "createdBy",
-            select: "userName email "
+            select: "userName email"
         }
-    ])
+    ]);
+
     res.status(200).json({
-        count: brand.length,
-        brand
-    })
-})
-/**--------------------------------
+        count: brands.length,
+        brands
+    });
+});
+
+/**
  * @desc Get One Brand
- * @router /api/v1/brand/:id
- * @access Public 
- * @method Get
+ * @route GET /api/v1/brand/:id
+ * @access Public
  */
 export const getBrand = asyncHandler(async (req, res) => {
     const { id } = req.params;
     const brand = await brandModel.findById(id).populate([
         {
             path: "createdBy",
-            select: "userName email "
+            select: "userName email"
         }
-    ])
+    ]);
+
     res.status(200).json({
         brand
-    })
-})
+    });
+});
