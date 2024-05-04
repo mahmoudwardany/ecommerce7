@@ -13,39 +13,39 @@ import ApiError from '../../utils/apiError.js';
  */
 export const signupCtrl = asyncHandler(async (req, res, next) => {
     try {
-        const { userName, email, password } = req.body;
-        const findUser = await userModel.findOne({ email }).select("email");
+        const { firstName, lastName, age, email, password } = req.body;
+        const findUser = await userModel.findOne({ email });
 
         if (findUser) {
             return next(new ApiError(`Email Already Exists`, 409));
         }
 
         const hashPassword = bcrypt.hashSync(password, ++process.env.SALT);
-        const newUser = new userModel({ userName, email, password: hashPassword });
+        const newUser = new userModel({ firstName, lastName, age, email, password: hashPassword });
 
-        const token = jwt.sign({ id: newUser._id }, process.env.confirmEmailJwt, {
+        const token = jwt.sign({ id: newUser._id, email: newUser.email }, process.env.confirmEmailJwt, {
             expiresIn: "1d"
         });
 
-        const link = `${req.protocol}://${req.headers.host}/${process.env.BASE_URL}/auth/confirm-email/${token}`;
-        const message = `
-            <a href="${link}">Please Click Me to Confirm Email</a>
-            <br>
-            <br>
-            <h3>Thank You.</h3>
-        `;
+        // const link = `${req.protocol}://${req.headers.host}/${process.env.BASE_URL}/auth/confirm-email/${token}`;
+        // const message = `
+        //     <a href="${link}">Please Click Me to Confirm Email</a>
+        //     <br>
+        //     <br>
+        //     <h3>Thank You.</h3>
+        // `;
 
-        const info = await sendMail(email, "Confirm Email", message);
-
-        if (info?.accepted?.length) {
-            const savedUser = await newUser.save();
-            res.status(201).json({
-                message: "Registration Successful. Please Check Your Email",
-                userId: savedUser.id
-            });
-        } else {
-            return next(new ApiError(`Email Rejected`, 400));
-        }
+        // const info = await sendMail(email, "Confirm Email", message);
+        // if (info?.accepted?.length) {
+        const savedUser = await newUser.save();
+        res.status(201).json({
+            message: "Registration Successful. Please Check Your Email",
+            userId: savedUser.id,
+            token
+        });
+        // } else {
+        //     return next(new ApiError(`Email Rejected`, 400));
+        // }
     } catch (error) {
         next(error);
     }
@@ -99,13 +99,13 @@ export const logInCtrl = asyncHandler(async (req, res, next) => {
             return next(new ApiError(`Invalid Email or Password`, 409));
         }
 
-        const token = jwt.sign({ _id: user.id }, process.env.confirmEmailJwt, {
+        const token = jwt.sign({ _id: user.id, email: user.email }, process.env.confirmEmailJwt, {
             expiresIn: "1d"
         });
 
-        if (!user?.confirmEmail) {
-            return next(new ApiError(`Email Not Confirmed. Please Confirm First`, 400));
-        }
+        // if (!user?.confirmEmail) {
+        //     return next(new ApiError(`Email Not Confirmed. Please Confirm First`, 400));
+        // }
 
         if (user?.blocked) {
             return next(new ApiError(`Your Email is blocked`, 400));

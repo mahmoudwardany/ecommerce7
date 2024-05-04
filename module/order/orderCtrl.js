@@ -152,12 +152,12 @@ export const getCheckout = asyncHandler(async (req, res, next) => {
             payment_method_types: ['card'],
             line_items: [{
                 currency: 'egp',
-                name: req.user.name,
+                name: 'shorouk',
                 amount: totalOrderPrice * 100,
                 quantity: 1,
             }],
             mode: 'payment',
-            customer_email: req.user.email,
+            customer_email:'shorouk@gamil.com',
             success_url: `${req.protocol}://${req.get('host')}/orders`,
             cancel_url: `${req.protocol}://${req.get('host')}/cart`,
         });

@@ -1,12 +1,15 @@
 import { Schema, model } from 'mongoose'
 
 const userSchema = new Schema({
-    userName: {
+    firstName: {
         type: String,
-        required: [true, 'userName is required'],
-        minLength: [3, 'too short userName'],
-        maxLength: [20, 'too long userName'],
+        required: [true, 'firstName is required'],
+        minLength: [3, 'too short firstName'],
+        maxLength: [20, 'too long firstName'],
     },
+    lastName: {
+        type: String,
+        required: true,    },
     email: {
         type: String,
         required: [true, 'email is required'],
@@ -15,6 +18,10 @@ const userSchema = new Schema({
     password: {
         type: String,
         required: [true, 'password is required'],
+    },
+    age: {
+        type: Number,
+        required: true,
     },
     phone: {
         type: String,
