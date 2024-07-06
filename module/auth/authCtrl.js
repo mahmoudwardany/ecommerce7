@@ -27,25 +27,25 @@ export const signupCtrl = asyncHandler(async (req, res, next) => {
             expiresIn: "1d"
         });
 
-        // const link = `${req.protocol}://${req.headers.host}/${process.env.BASE_URL}/auth/confirm-email/${token}`;
-        // const message = `
-        //     <a href="${link}">Please Click Me to Confirm Email</a>
-        //     <br>
-        //     <br>
-        //     <h3>Thank You.</h3>
-        // `;
+         const link = `${req.protocol}://${req.headers.host}/${process.env.BASE_URL}/auth/confirm-email/${token}`;
+         const message = `
+             <a href="${link}">Please Click Me to Confirm Email</a>
+             <br>
+             <br>
+             <h3>Thank You.</h3>
+         `;
 
-        // const info = await sendMail(email, "Confirm Email", message);
-        // if (info?.accepted?.length) {
+        const info = await sendMail(email, "Confirm Email", message);
+         if (info?.accepted?.length) {
         const savedUser = await newUser.save();
         res.status(201).json({
             message: "Registration Successful. Please Check Your Email",
             userId: savedUser.id,
             token
         });
-        // } else {
-        //     return next(new ApiError(`Email Rejected`, 400));
-        // }
+         } else {
+             return next(new ApiError(`Email Rejected`, 400));
+         }
     } catch (error) {
         next(error);
     }
@@ -103,9 +103,9 @@ export const logInCtrl = asyncHandler(async (req, res, next) => {
             expiresIn: "1d"
         });
 
-        // if (!user?.confirmEmail) {
-        //     return next(new ApiError(`Email Not Confirmed. Please Confirm First`, 400));
-        // }
+         if (!user?.confirmEmail) {
+            return next(new ApiError(`Email Not Confirmed. Please Confirm First`, 400));
+         }
 
         if (user?.blocked) {
             return next(new ApiError(`Your Email is blocked`, 400));
